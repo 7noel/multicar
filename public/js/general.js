@@ -17,6 +17,14 @@ $(document).ready(function () {
 		var status=$('#lstStatus').val();
 		loadOrders(local,date1,date2,tipo,cia,status);
 	});
+	$('#frmReportInvoices').submit(function(e){
+		e.preventDefault();
+		var local=$('#lstLocal').val();
+		var date1=$('#date1').val();
+		var date2=$('#date2').val();
+		var status=$('#lstStatus').val();
+		loadInvoices(local,date1,date2,status);
+	});
 });
 
 function loadOrders(local,date1,date2,tipo,cia,status) {
@@ -29,7 +37,22 @@ function loadOrders(local,date1,date2,tipo,cia,status) {
 		//console.log(data);
 		$.each(data, function (index, ot) {
  			//console.log(ot.NroOrden+"-")
- 			renderTemplateDetail(ot);
+ 			renderTemplateDetailOrders(ot);
+ 		});
+	});
+}
+
+function loadInvoices(local,date1,date2,status) {
+	$("#tblInvoices").empty();
+	var page = "/invoices/report/ajax/" + date1 + "/" +date2 + "/" + status;
+	if (local == "comas") {
+		page = "/invoices/report/ajax/" + date1 + "/" +date2 + "/" + status;
+	}
+	$.get(page, function (data) {
+		//console.log(data);
+		$.each(data, function (index, v) {
+ 			console.log(v)
+ 			renderTemplateDetailInvoices(v);
  		});
 	});
 }
@@ -39,7 +62,7 @@ function activateTemplate (id) {
 	return document.importNode(t.content, true);
 }
 
-function renderTemplateDetail (data) {
+function renderTemplateDetailOrders (data) {
 	var clone = activateTemplate("#template-detail");
  	clone.querySelector("[data-ot]").innerHTML = data.NroOrden;
  	clone.querySelector("[data-f1]").innerHTML = fecha(data.FecIngreso);
@@ -47,13 +70,29 @@ function renderTemplateDetail (data) {
  	clone.querySelector("[data-marca]").innerHTML = data.Marca;
  	clone.querySelector("[data-modelo]").innerHTML = data.Modelo;
  	clone.querySelector("[data-seguro]").innerHTML = data.CiaSeguros;
- 	clone.querySelector("[data-f2]").innerHTML = fecha(data.arrival_parts);
+ 	clone.querySelector("[data-f2]").innerHTML = fecha(data.approved_at);
+ 	clone.querySelector("[data-f3]").innerHTML = fecha(data.arrival_parts);
  	clone.querySelector("[data-cliente]").innerHTML = data.NomCliente;
  	clone.querySelector("[data-status]").innerHTML = data.statusfull;
- 	clone.querySelector("[data-f3]").innerHTML = fecha(data.programmed_at);
- 	clone.querySelector("[data-f4]").innerHTML = fecha(data.delivered_at);
+ 	clone.querySelector("[data-f4]").innerHTML = fecha(data.programmed_at);
+ 	clone.querySelector("[data-f5]").innerHTML = fecha(data.delivered_at);
 	//$("#tblOrders").empty();
 	$("#tblOrders").append(clone);
+}
+function renderTemplateDetailInvoices (data) {
+	var clone = activateTemplate("#template-detail");
+	clone.querySelector("[data-nroventa]").innerHTML = data.NroVenta;
+ 	clone.querySelector("[data-f1]").innerHTML = fecha(data.Fecha);
+ 	clone.querySelector("[data-doc]").innerHTML = data.DctoVenta + " " + data.Serie + "-" + data.Numero;
+ 	clone.querySelector("[data-total]").innerHTML = data.Moneda+" "+data.Total;
+ 	clone.querySelector("[data-ot]").innerHTML = data.NroOrden;
+ 	clone.querySelector("[data-placa]").innerHTML = data.Placa;
+ 	clone.querySelector("[data-marca]").innerHTML = data.Marca;
+ 	clone.querySelector("[data-modelo]").innerHTML = data.Modelo;
+ 	clone.querySelector("[data-cliente]").innerHTML = data.NomCliente;
+ 	clone.querySelector("[data-status]").innerHTML = data.EstadoFactura;
+	//$("#tblOrders").empty();
+	$("#tblInvoices").append(clone);
 }
 function fecha(input) {
     var ptrn = /(\d{4})\-(\d{2})\-(\d{2})/;

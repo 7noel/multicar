@@ -15,7 +15,7 @@
                             </a>
                         </div>
                         <div class="col-xs-6 col-md-3">
-                            <a href="#" class="thumbnail">FACTURACION
+                            <a href="/invoices/report" class="thumbnail">FACTURACION
                                 <img src="/img/billings.png" alt="...">
                             </a>
                         </div>
