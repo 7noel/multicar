@@ -19,7 +19,7 @@ class OrdersController extends Controller {
 	public function reportOrder()
 	{
 		$tipos = [""=>'Seleccionar'] + Order::select('TipoOrden')->groupBy('TipoOrden')->pluck('TipoOrden', 'TipoOrden')->toArray();
-		$status = [""=>"Seleccionar", "RECIBIDO"=>"RECIBIDO", "APROBADO"=>"APROBADO", "DESMONTAJE"=>"DESMONTAJE", "PLANCHADO"=>"PLANCHADO", "PINTURA"=>"PINTURA", "ARMADO"=>"ARMADO", "MECANICA"=>"MECANICA", "ENTREGADO"=>"ENTREGADO"]
+		$status = [""=>"Seleccionar", "RECIBIDO"=>"RECIBIDO", "APROBADO"=>"APROBADO", "DESMONTAJE"=>"DESMONTAJE", "PLANCHADO"=>"PLANCHADO", "PINTURA"=>"PINTURA", "ARMADO"=>"ARMADO", "MECANICA"=>"MECANICA", "ENTREGADO"=>"ENTREGADO"];
 		$insurances = [""=>'Seleccionar'] + Insurance::select('RUC','Nombre')->groupBy('RUC','Nombre')->pluck('Nombre', 'RUC')->toArray();
 		
 		return view('orders.report', compact('tipos','status','insurances'));
