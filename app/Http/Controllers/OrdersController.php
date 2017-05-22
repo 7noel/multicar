@@ -25,18 +25,21 @@ class OrdersController extends Controller {
 		return view('orders.report', compact('tipos','status','insurances'));
 	}
 
-	public function ajaxReportOrder($date1, $date2, $tipo = null, $cia = null, $status = null)
+	public function ajaxReportOrder($date1, $date2, $tipo = null)
 	{
+		$cia = request('cia');
+		$status = request('status');
+		//dd($cia);
 		$query = Order::query();
 		if ($date1 <= $date2) {
 			$query = $query->where('FecIngreso', '<=', $date2)->where('FecIngreso','>=',$date1);
-			if ($tipo != null) {
+			if ($tipo != null and $tipo != '') {
 				$query = $query->where('TipoOrden', $tipo);
 			}
-			if ($cia != null) {
+			if ($cia != null and $cia != '') {
 				$query = $query->where('CiaRUC', $cia);
 			}
-			if ($status != null) {
+			if ($status != null and $status != '') {
 				$query = $query->where('status', $status);
 			}
 			$result = $query->get();

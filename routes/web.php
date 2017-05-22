@@ -11,9 +11,7 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', 'HomeController@index');
 
 Auth::routes();
 
@@ -22,12 +20,12 @@ Route::get('/home', 'HomeController@index');
 //Route::get('/', 'HomeController@index');
 
 Route::group(['middleware'=>['auth']], function(){
-	//
-	Route::get('orders/report/ajax/{date1}/{date2}/{tipo?}/{cia?}/{status?}', ['as' => 'ajaxordersreport', 'uses' => 'OrdersController@ajaxReportOrder']);
-	//Route::get('invoices/report/ajax/{date1}/{date2}/{status}', ['as' => 'ajaxinvoicesreport','uses' => 'InvoicesController@ajaxReportInvoice']);
-
-	//
 	//Route::get('invoices/report', ['as' => 'invoicesreport', 'uses' => 'InvoicesController@reportInvoice']);
 	Route::get('orders/report', ['as' => 'ordersreport','uses' => 'OrdersController@reportOrder']);
 
+});
+
+Route::group(['middleware'=>['cors']], function(){
+	Route::get('orders/report/ajax/{date1}/{date2}/{tipo?}', ['as' => 'ajaxordersreport', 'uses' => 'OrdersController@ajaxReportOrder']);
+	//Route::get('invoices/report/ajax/{date1}/{date2}/{status}', ['as' => 'ajaxinvoicesreport','uses' => 'InvoicesController@ajaxReportInvoice']);
 });
