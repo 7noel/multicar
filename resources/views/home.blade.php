@@ -5,11 +5,21 @@
     <div class="row">
         <div class="col-md-8 col-md-offset-2">
             <div class="panel panel-default">
-                <div class="panel-heading">Dashboard</div>
+                <div class="panel-heading">Bienvenido</div>
 
                 <div class="panel-body">
-                    <p><a href="/orders/report">Reporte de Ordenes</a></p>
-                    <p><a href="/orders/report">Reporte de Facturas</a></p>
+                    <div class="row">
+                        <div class="col-xs-6 col-md-3">
+                            <a href="/orders/report" class="thumbnail">VEHICULOS
+                                <img src="/img/auto.jpg" alt="...">
+                            </a>
+                        </div>
+                        <div class="col-xs-6 col-md-3">
+                            <a href="#" class="thumbnail">FACTURACION
+                                <img src="/img/billings.png" alt="...">
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
