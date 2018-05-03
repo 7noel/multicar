@@ -22,6 +22,7 @@ Route::get('/home', 'HomeController@index');
 Route::group(['middleware'=>['auth']], function(){
 	Route::get('invoices/report', ['as' => 'invoicesreport', 'uses' => 'InvoicesController@reportInvoice']);
 	Route::get('orders/report', ['as' => 'ordersreport','uses' => 'OrdersController@reportOrder']);
+	Route::get('excel', ['as' => 'excel','uses' => 'OrdersController@exportExcel']);
 
 });
 
