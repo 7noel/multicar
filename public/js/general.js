@@ -81,7 +81,7 @@ function renderTemplateDetailOrders (data) {
 }
 function renderTemplateDetailInvoices (data) {
 	var clone = activateTemplate("#template-detail");
-	clone.querySelector("[data-nroventa]").innerHTML = data.NroVenta;
+	clone.querySelector("[data-nroventa]").innerHTML = '<a target="_blank" href="/invoices/'+data.NroVenta+'/edit">'+data.NroVenta+'</a>';
  	clone.querySelector("[data-f1]").innerHTML = fecha(data.Fecha);
  	clone.querySelector("[data-doc]").innerHTML = data.DctoVenta + " " + data.Serie + "-" + data.Numero;
  	clone.querySelector("[data-total]").innerHTML = data.Moneda+" "+data.Total;
