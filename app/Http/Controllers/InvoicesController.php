@@ -25,8 +25,9 @@ class InvoicesController extends Controller {
 	{
 		$data = \Request::all();
 		$model = Invoice::find($id);
-		$this->consultarCpe($model);
-		dd($model);
+		// $rp = $this->consultarCpe($model);
+		// dd(strlen($rp));
+		// dd(json_decode($rp));
 		$model->fill($data);
 		if (isset($data['send_sunat'])) {
 			$send_email = (isset($data['send_email'])) ? true : false;
@@ -64,18 +65,22 @@ class InvoicesController extends Controller {
 
 	public function reportInvoice()
 	{
-		$status = [""=>"Seleccionar", "ANULADO"=>"ANULADO", "PENDIENTE"=>"PENDIENTE", "CANCELADO"=>"CANCELADO"];
+		$status = [""=>"Cualquiera", "ANULADO"=>"ANULADO", "PENDIENTE"=>"PENDIENTE", "CANCELADO"=>"CANCELADO"];
 		
 		return view('invoices.report', compact('status'));
 	}
 
-	public function ajaxReportInvoice($date1, $date2, $status = null)
+	public function ajaxReportInvoice($date1, $date2, $sunat, $status = null)
 	{
 		$query = Invoice::query();
+		
 		if ($date1 <= $date2) {
 			$query = $query->where('Fecha', '<=', $date2)->where('Fecha','>=',$date1);
 			if ($status != null and $status != '') {
 				$query = $query->where('EstadoFactura', $status);
+			}
+			if ($sunat >= 0) {
+				$query = $query->where('status_sunat', $sunat);
 			}
 			$result = $query->orderBy('Fecha', 'desc')->get();
 		} else {
@@ -95,7 +100,7 @@ class InvoicesController extends Controller {
 		];
 		// $data = json_encode($data);
 		$respuesta = $this->send($data);
-		dd(json_decode($respuesta));
+		// dd(json_decode($respuesta));
 		return $respuesta;
 
 	}
@@ -233,7 +238,7 @@ class InvoicesController extends Controller {
 				"valor_unitario"            => abs($detail->PrecUnitario),
 				"precio_unitario"           => round(abs($detail->PrecUnitario)*1.18, 2),
 				"descuento"                 => abs($detail->PrecDscto),
-				"subtotal"                  => abs($detail->PrecTotal),
+				"subtotal"                  => $subtotal,
 				"tipo_de_igv"               => '1',
 				"igv"                       => $igv,
 				"total"                     => $total,

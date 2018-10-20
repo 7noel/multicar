@@ -19,11 +19,11 @@ $(document).ready(function () {
 	});
 	$('#frmReportInvoices').submit(function(e){
 		e.preventDefault();
-		var local=$('#lstLocal').val();
+		var sunat=$('#lstSunat').val();
 		var date1=$('#date1').val();
 		var date2=$('#date2').val();
 		var status=$('#lstStatus').val();
-		loadInvoices(local,date1,date2,status);
+		loadInvoices(sunat,date1,date2,status);
 	});
 });
 
@@ -42,16 +42,16 @@ function loadOrders(local,date1,date2,tipo,cia,status) {
 	});
 }
 
-function loadInvoices(local,date1,date2,status) {
+function loadInvoices(sunat,date1,date2,status) {
 	$("#tblInvoices").empty();
-	var page = "/invoices/report/ajax/" + date1 + "/" +date2 + "/" + status;
-	if (local == "comas") {
-		page = "/invoices/report/ajax/" + date1 + "/" +date2 + "/" + status;
-	}
+	var page = "/invoices/report/ajax/" + date1 + "/" +date2 + "/" + sunat + "/" + status;
+	// if (local == "comas") {
+	// 	page = "/invoices/report/ajax/" + date1 + "/" +date2 + "/" + sunat + "/" + status;
+	// }
 	$.get(page, function (data) {
 		//console.log(data);
 		$.each(data, function (index, v) {
- 			console.log(v)
+ 			// console.log(v)
  			renderTemplateDetailInvoices(v);
  		});
 	});

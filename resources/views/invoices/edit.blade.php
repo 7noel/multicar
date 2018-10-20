@@ -17,7 +17,7 @@
 					@endif
 					@if($model->status_sunat == 1 or $model->status_sunat == 2)
 					<div class="form-group form-group-sm">
-						<a href="{{ json_decode($model->respuesta_sunat)->enlace_del_pdf }}" class="btn btn-default"><span class="glyphicon glyphicon-print" aria-hidden="true"></span> Ver PDF</a>
+						<a target="_blank" href="{{ json_decode($model->respuesta_sunat)->enlace_del_pdf }}" class="btn btn-default"><span class="glyphicon glyphicon-print" aria-hidden="true"></span> Ver PDF</a>
 						<a href="{{ json_decode($model->respuesta_sunat)->enlace_del_xml }}" class="btn btn-default"><span class="glyphicon glyphicon-save-file" aria-hidden="true"></span> Descargar XML</a>
 					</div>
 					@elseif(isset(json_decode($model->respuesta_sunat)->errors))

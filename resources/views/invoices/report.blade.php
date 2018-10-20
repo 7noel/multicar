@@ -8,11 +8,11 @@
                 <div class="panel-heading">Reporte de Facturas</div>
             	{!! Form::open(['url' => '#', 'class'=>'form-horizontal', 'id'=>'frmReportInvoices']) !!}
             		<div class="form-group  form-group-sm">
-						{!! Form::label('local','Local', ['class'=>'col-sm-2 control-label']) !!}
+						{!! Form::label('sunat','Status Sunat', ['class'=>'col-sm-2 control-label']) !!}
 						<div class="col-sm-4">
-						{!! Form::select('local', ['ate'=>'ATE', 'comas'=>'COMAS'], null, ['class'=>'form-control', 'id'=>'lstLocal', 'required'=>'required']); !!}
+						{!! Form::select('sunat', (['-'=>'Cualquiera'] + config('options.status_sunat')), null, ['class'=>'form-control', 'id'=>'lstSunat']); !!}
 						</div>
-						{!! Form::label('status','Status', ['class'=>'col-sm-2 control-label']) !!}
+						{!! Form::label('status','Status Factura', ['class'=>'col-sm-2 control-label']) !!}
 						<div class="col-sm-4">
 						{!! Form::select('status', $status, null, ['class'=>'form-control', 'id'=>'lstStatus']); !!}
 						</div>

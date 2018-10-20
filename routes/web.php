@@ -29,5 +29,5 @@ Route::group(['middleware'=>['auth']], function(){
 
 Route::group(['middleware'=>['cors']], function(){
 	Route::get('orders/report/ajax/{date1}/{date2}/{tipo?}', ['as' => 'ajaxordersreport', 'uses' => 'OrdersController@ajaxReportOrder']);
-	Route::get('invoices/report/ajax/{date1}/{date2}/{status?}', ['as' => 'ajaxinvoicesreport','uses' => 'InvoicesController@ajaxReportInvoice']);
+	Route::get('invoices/report/ajax/{date1}/{date2}/{sunat}/{status?}', ['as' => 'ajaxinvoicesreport','uses' => 'InvoicesController@ajaxReportInvoice']);
 });
