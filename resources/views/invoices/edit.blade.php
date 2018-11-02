@@ -91,7 +91,7 @@
 							{!! Form::checkbox('send_email', '1', true) !!} Enviar Emails
 						</label>
 						@endif
-						@if($model->status_sunat == 2)
+						@if($model->status_sunat == 2 or $model->status_sunat == 1)
 						<label class="checkbox-inline">
 							{!! Form::checkbox('anular_sunat', '1') !!} Anular
 						</label>

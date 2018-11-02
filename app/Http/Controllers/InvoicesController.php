@@ -53,6 +53,17 @@ class InvoicesController extends Controller {
 			} else {
 				$model->status_sunat = 4;
 			}
+		} else {
+			$respuesta = $this->consultarCpe($model);
+			$model->respuesta_sunat = $respuesta;
+			$respuesta = json_decode($respuesta);
+			if(isset($respuesta->aceptada_por_sunat)) {
+				if ($respuesta->aceptada_por_sunat == true) {
+					$model->status_sunat = 2;
+				} else {
+					$model->status_sunat = 1;
+				}
+			}
 		}
 		$model->save();
 
@@ -194,6 +205,12 @@ class InvoicesController extends Controller {
 		);
 		if (trim($model->Siniestro) != '' and trim($model->Poliza) != '' and trim($model->Franquicia) != '') {
   			$data['observaciones'] = 'SINIESTRO:'.$model->Siniestro.'//POLIZA:'.$model->Poliza.'//FRANQUICIA:'.$model->Moneda.' '.$model->Franquicia.'+IGV';
+		} else {
+			$ot = \DB::select("select * from ordtra where NroOrden = :id", ['id' => $model->NroOrden]);
+			if (count($ot)>0) {
+				$ot = $ot[0];
+				$data['observaciones'] = 'OT: ' . $ot->NroOTProv . ' OC:' . $ot->NroOCProv;
+			}
 		}
 		$data['observaciones'] .= (trim($model->NroOrden)=="") ? '' : "<br><b>ORDEN DE TRABAJO: </b>".$model->NroOrden;
 		$data['observaciones'] .= (trim($model->Marca)=="") ? '' : "<br><b>MARCA: </b>".$model->Marca;
@@ -232,8 +249,8 @@ class InvoicesController extends Controller {
 			$igv = abs($total) - abs($subtotal);
 			$data['items'][] = array(
 				"unidad_de_medida"          => 'ZZ',
-				"codigo"                    => $detail->Familia,
-				"descripcion"               => $detail->NomMaterial,
+				"codigo"                    => (strlen($detail->Familia)>9) ? '' : $detail->Familia,
+				"descripcion"               => (strlen($detail->Familia)>9) ? $detail->Familia.' '.$detail->NomMaterial : $detail->NomMaterial,
 				"cantidad"                  => abs($detail->Cantidad),
 				"valor_unitario"            => abs($detail->PrecUnitario),
 				"precio_unitario"           => round(abs($detail->PrecUnitario)*1.18, 2),
