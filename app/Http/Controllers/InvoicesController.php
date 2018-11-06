@@ -160,7 +160,7 @@ class InvoicesController extends Controller {
 		    "numero"				=> $model->Numero,
 		    "sunat_transaction"			=> "1",
 		    "cliente_tipo_de_documento"		=> config('options.sunat.cliente_tipo_de_documento.'.$model->DniExt),
-		    "cliente_numero_de_documento"	=> $model->DNI,
+		    "cliente_numero_de_documento"	=> trim($model->DNI),
 		    "cliente_denominacion"              => $model->NomCliente,
 		    "cliente_direccion"                 => $model->Direccion,
 		    "cliente_email"                     => $model->email,
