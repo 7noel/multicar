@@ -173,7 +173,7 @@ class InvoicesController extends Controller {
 		    "tipo_de_cambio"                    => $model->TipoCambio,
 		    "porcentaje_de_igv"                 => "18.00",
 		    "descuento_global"                  => abs($model->TotalDscto),
-		    "total_descuento"                   => abs($model->TotalDscto),
+		    "total_descuento"                   => "",
 		    "total_anticipo"                    => "",
 		    "total_gravada"                     => abs($model->SubTotal),
 		    "total_inafecta"                    => "",
