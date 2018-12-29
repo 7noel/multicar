@@ -250,6 +250,7 @@ class InvoicesController extends Controller {
 			$data['items'][] = array(
 				"unidad_de_medida"          => 'ZZ',
 				"codigo"                    => (strlen($detail->Familia)>9) ? '' : $detail->Familia,
+				"codigo_producto_sunat"		=> "78181501",
 				"descripcion"               => (strlen($detail->Familia)>9) ? $detail->Familia.' '.$detail->NomMaterial : $detail->NomMaterial,
 				"cantidad"                  => abs($detail->Cantidad),
 				"valor_unitario"            => abs($detail->PrecUnitario),
