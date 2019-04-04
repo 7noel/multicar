@@ -218,7 +218,7 @@ class InvoicesController extends Controller {
 		// $data['observaciones'] .= (trim($model->NroMotor)=="") ? '' : "<br><b>N° MOTOR: </b>".$model->NroMotor;
 		// $data['observaciones'] .= (trim($model->Color)=="") ? '' : "<br><b>COLOR: </b>".$model->Color;
 		// $data['observaciones'] .= (trim($model->Kilometraje)==0) ? '' : "<br><b>KILOMETRAJE: </b>".$model->Kilometraje;
-		// $data['observaciones'] .= (trim($model->SerieMotor)=="") ? '' : "<br><b>NUMERO DE SERIE: </b>".$model->SerieMotor;
+		$data['observaciones'] .= (trim($model->SerieMotor)=="") ? '' : "<br><b>VIN: </b>".$model->SerieMotor;
 
 		$details = \DB::select('select * from iteventa where NroVenta = :id', ['id' => $model->NroVenta]);
 		foreach ($details as $key => $detail) {
