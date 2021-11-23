@@ -66,7 +66,7 @@
 							<p class="form-control-static">{{ $model->EstadoFactura }}</p>
 						</div>
 					</div>
-					@if($data['detraccion'])
+					@if(($model->status_sunat == 0) and $data['detraccion'])
 						{!! Form::hidden('d_porc', $data['d_porc']) !!}
 						{!! Form::hidden('d_monto', $data['d_monto']) !!}
 						{!! Form::hidden('neto', $data['neto'], ['id'=>'neto']) !!}
@@ -94,15 +94,15 @@
 						</div>
 					</div>
 					@endif
-					{!! Form::hidden('fecha', $data['fecha'], ['id'=>'fecha']) !!}
-					{!! Form::hidden('total', $data['Total'], ['id'=>'total']) !!}
-					{!! Form::hidden('FechaVence', $data['FechaVence'], ['id'=>'FechaVence']) !!}
-					{!! Form::hidden('Dias', $data['Dias'], ['id'=>'Dias']) !!}
-					@if(1==1)
+					@if($model->status_sunat == 0)
+						{!! Form::hidden('fecha', $data['fecha'], ['id'=>'fecha']) !!}
+						{!! Form::hidden('total', $data['Total'], ['id'=>'total']) !!}
+						{!! Form::hidden('FechaVence', $data['FechaVence'], ['id'=>'FechaVence']) !!}
+						{!! Form::hidden('Dias', $data['Dias'], ['id'=>'Dias']) !!}
 					<div class="form-group form-group-sm">
 						<div class="col-sm-2">
 							{!! Form::label('CondPago', 'C. de Pago', ['class'=>'control-label']) !!}
-							{!! Form::select('CondPago', ['CONTADO' => 'CONTADO', 'CREDITO' => 'CREDITO'], null, ['class'=>'form-control col-sm-2']) !!}
+							{!! Form::select('CondPago', ['CONTADO' => 'CONTADO', 'CREDITO' => 'CREDITO'], trim($model->CondPago), ['class'=>'form-control col-sm-2']) !!}
 						</div>
 						<div class="col-sm-2 credito">
 							{!! Form::label('cuotas', 'Cuotas', ['class'=>'control-label']) !!}
