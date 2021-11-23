@@ -49,6 +49,7 @@ class InvoicesController extends Controller {
 		if ($model->Moneda == 'US$') {
 			$total_soles = $tc->venta * $model->Total;
 		}
+		$data['CondPago'] = trim($model->CondPago);
 		$data['Total'] = $model->Total;
 		$data['tc'] = $tc->venta;
 		$data['fecha'] = $model->Fecha;
@@ -57,7 +58,7 @@ class InvoicesController extends Controller {
 		$data['d_porc'] = 0.12;
 		$data['detraccion'] = false;
 		$neto = $model->Total;
-		if ($total_soles > 700) {
+		if ($total_soles > 700 and trim($model->DctoVenta) == 'FACTURA') {
 			$data['detraccion'] = true;
 			$data['d_monto'] = round($model->Total * $data['d_porc'], 2);
 			$data['neto'] = round($model->Total - $data['d_monto'], 2);
