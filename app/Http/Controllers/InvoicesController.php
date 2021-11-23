@@ -221,7 +221,7 @@ class InvoicesController extends Controller {
 		    "cliente_email_2"                   => $model->email2,
 		    "fecha_de_emision"                  => date('d-m-Y', strtotime($model->Fecha)),
 		    // "fecha_de_emision"                  => date('d-m-Y'),
-		    "fecha_de_vencimiento"              => "",
+		    "fecha_de_vencimiento"              => date('d-m-Y', strtotime($model->FechaVence)),
 		    "moneda"                            => config('options.sunat.moneda')[$model->Moneda],
 		    "tipo_de_cambio"                    => $model->TipoCambio,
 		    "porcentaje_de_igv"                 => "18.00",
