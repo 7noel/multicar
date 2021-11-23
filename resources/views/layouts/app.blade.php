@@ -191,8 +191,8 @@ $(document).ready(function () {
                 if ($('#detraccion').is(":checked")) {
                     total = parseFloat($('#neto').val())
                 }
-                cuota_1 = Math.round(total*100/2)/100
-                cuota_2 = total - cuota_1
+                cuota_1 = (Math.round(total*100/2)/100).toFixed(2)
+                cuota_2 = (total - cuota_1).toFixed(2)
                 $('#cuota_1').val(cuota_1)
                 $('#cuota_2').val(cuota_2)
                 $('#FechaVence').val($('#fecha_2').val())
