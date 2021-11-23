@@ -66,8 +66,70 @@
 							<p class="form-control-static">{{ $model->EstadoFactura }}</p>
 						</div>
 					</div>
+					@if($data['detraccion'])
+						{!! Form::hidden('d_porc', $data['d_porc']) !!}
+						{!! Form::hidden('d_monto', $data['d_monto']) !!}
+						{!! Form::hidden('neto', $data['neto'], ['id'=>'neto']) !!}
 					<div class="form-group form-group-sm">
-						<div class="col-sm-3">
+						<div class="col-sm-2">
+							<label class="checkbox-inline">
+								{!! Form::checkbox('detraccion', '1', true, ['id'=>'detraccion']) !!} Aplicar Detracción
+							</label>
+						</div>
+						<div class="col-sm-2 detraccion">
+							{!! Form::label('d_porc','Porcentaje', ['class'=>'control-label']) !!}
+							<p class="form-control-static">{{ $data['d_porc']*100 }} %</p>
+						</div>
+						<div class="col-sm-2 detraccion">
+							{!! Form::label('tc', 'Tipo Cambio', ['class'=>'control-label']) !!}
+							{!! Form::number("tc", $data['tc'], ['class'=>'form-control col-sm-2', 'step'=>0.01]) !!}
+						</div>
+						<div class="col-sm-2 detraccion">
+							{!! Form::label('d_monto','Detracción', ['class'=>'control-label']) !!}
+							<p class="form-control-static">S/ {{ $data['d_monto'] }}</p>
+						</div>
+						<div class="col-sm-2 detraccion">
+							{!! Form::label('neto','Neto a Pagar', ['class'=>'control-label']) !!}
+							<p class="form-control-static">{{ $model->Moneda }} {{ $data['neto'] }}</p>
+						</div>
+					</div>
+					@endif
+					{!! Form::hidden('fecha', $data['fecha'], ['id'=>'fecha']) !!}
+					{!! Form::hidden('total', $data['Total'], ['id'=>'total']) !!}
+					{!! Form::hidden('FechaVence', $data['FechaVence'], ['id'=>'FechaVence']) !!}
+					{!! Form::hidden('Dias', $data['Dias'], ['id'=>'Dias']) !!}
+					@if(1==1)
+					<div class="form-group form-group-sm">
+						<div class="col-sm-2">
+							{!! Form::label('CondPago', 'C. de Pago', ['class'=>'control-label']) !!}
+							{!! Form::select('CondPago', ['CONTADO' => 'CONTADO', 'CREDITO' => 'CREDITO'], null, ['class'=>'form-control col-sm-2']) !!}
+						</div>
+						<div class="col-sm-2 credito">
+							{!! Form::label('cuotas', 'Cuotas', ['class'=>'control-label']) !!}
+							{!! Form::select('cuotas', ['1' => '1', '2' => '2'], null, ['class'=>'form-control col-sm-2']) !!}
+						</div>
+						<div class="col-sm-2 credito cuota1">
+							{!! Form::hidden("credito[0][cuota]", 1, ['id'=>'fecha']) !!}
+							{!! Form::label('fecha_1', 'Fecha 1', ['class'=>'control-label']) !!}
+							{!! Form::date("credito[0][fecha_de_pago]", null, ['class'=>'form-control col-sm-2', 'id'=>'fecha_1']) !!}
+						</div>
+						<div class="col-sm-2 credito cuota1">
+							{!! Form::label('cuota_1', 'Cuota 1', ['class'=>'control-label']) !!}
+							{!! Form::number("credito[0][importe]", null, ['class'=>'form-control col-sm-2', 'step'=>0.01, 'id'=>'cuota_1']) !!}
+						</div>
+						<div class="col-sm-2 credito cuota2">
+							{!! Form::hidden("credito[1][cuota]", 2, ['id'=>'fecha']) !!}
+							{!! Form::label('fecha_2', 'Fecha 2', ['class'=>'control-label']) !!}
+							{!! Form::date("credito[1][fecha_de_pago]", null, ['class'=>'form-control col-sm-2', 'id'=>'fecha_2']) !!}
+						</div>
+						<div class="col-sm-2 credito cuota2">
+							{!! Form::label('cuota_2', 'Cuota 2', ['class'=>'control-label']) !!}
+							{!! Form::number("credito[1][importe]", null, ['class'=>'form-control col-sm-2', 'step'=>0.01, 'id'=>'cuota_2']) !!}
+						</div>
+					</div>
+					@endif
+					<div class="form-group form-group-sm">
+						<div class="col-sm-2">
 							{!! Form::label('status','STATUS SUNAT', ['class'=>'control-label']) !!}
 							<p class="form-control-static bg-info text-center">{{ config('options.status_sunat.'.$model->status_sunat) }}</p>
 						</div>
