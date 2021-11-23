@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 use App\Invoice;
+use App\Exchange;
 
 class InvoicesController extends Controller {
 
@@ -17,13 +18,64 @@ class InvoicesController extends Controller {
 
 	public function edit($id)
 	{
+		$last_tc = Exchange::orderBy('fecha', 'desc')->first();
+		if (is_null($last_tc) or $last_tc->fecha < date('Y-m-d')) {
+			$t_cs = $this->getTipoCambioMes(date('Y'),date('m'));
+			foreach ($t_cs as $key => $t_c) {
+				if (is_null($last_tc) or $t_c->fecha > $last_tc->fecha) {
+					$cambio = Exchange::create(['fecha'=>$t_c->fecha, 'venta'=>$t_c->venta, 'compra'=>$t_c->compra]);
+				}
+			}
+			$last_tc = Exchange::orderBy('fecha', 'desc')->first();
+		}
+
 		$model = Invoice::find($id);
-		return view('invoices.edit', compact('model'));
+		//dd($model);
+		if ($last_tc->fecha == $model->Fecha) {
+			$tc = $last_tc;
+		} else {
+			$tc = Exchange::where('fecha', $model->Fecha)->first();
+			if (is_null($tc)) {
+				$t_c = $this->getTipoCambio($model->Fecha);
+				if (isset($t_c->fecha)) {
+					$tc = Exchange::create(['fecha'=>$t_c->fecha, 'venta'=>$t_c->venta, 'compra'=>$t_c->compra]);
+				}
+			}
+
+		}
+
+		// Preparar data
+		$total_soles = $model->Total;
+		if ($model->Moneda == 'US$') {
+			$total_soles = $tc->venta * $model->Total;
+		}
+		$data['Total'] = $model->Total;
+		$data['tc'] = $tc->venta;
+		$data['fecha'] = $model->Fecha;
+		$data['FechaVence'] = $model->Fecha;
+		$data['Dias'] = $model->Dias;
+		$data['d_porc'] = 0.12;
+		$data['detraccion'] = false;
+		$neto = $model->Total;
+		if ($total_soles > 700) {
+			$data['detraccion'] = true;
+			$data['d_monto'] = round($model->Total * $data['d_porc'], 2);
+			$data['neto'] = round($model->Total - $data['d_monto'], 2);
+			if ($model->Moneda == 'US$') {
+				$data['d_monto'] = round($data['d_monto'] * $tc->venta , 2);
+			}
+		}
+		if($model->CondPago != 'CONTADO') {
+			$data['Dias'] = 30;
+			$data['FechaVence'] = date("Y-m-d",strtotime($model->Fecha."+ 30 days"));
+		}
+		return view('invoices.edit', compact('model', 'data'));
 	}
 
 	public function update($id)
 	{
 		$data = \Request::all();
+		//dd($data);
 		$model = Invoice::find($id);
 		// $rp = $this->consultarCpe($model);
 		// dd(strlen($rp));
@@ -31,7 +83,7 @@ class InvoicesController extends Controller {
 		$model->fill($data);
 		if (isset($data['send_sunat'])) {
 			$send_email = (isset($data['send_email'])) ? true : false;
-			$respuesta = $this->generarComprobante($model, $send_email);
+			$respuesta = $this->generarComprobante($model, $send_email, $data);
 			$model->respuesta_sunat = $respuesta;
 			$respuesta = json_decode($respuesta);
 			if(isset($respuesta->aceptada_por_sunat)) {
@@ -137,9 +189,9 @@ class InvoicesController extends Controller {
 	 * @param  Proof $model Comprobante de Pago
 	 * @return html        Retorna Respuesta
 	 */
-	public function generarComprobante($model, $send_email)
+	public function generarComprobante($model, $send_email, $extra)
 	{
-		$data = $this->prepareCpe($model, $send_email);
+		$data = $this->prepareCpe($model, $send_email, $extra);
 		$respuesta = $this->send($data);
 		return $respuesta; 
 		//dd($respuesta);
@@ -151,7 +203,7 @@ class InvoicesController extends Controller {
 	 * @param  Proof $model Comprobante de pago
 	 * @return Array        array lista para ser formateada y enviada en formato json
 	 */
-	public function prepareCpe($model, $send_email=0)
+	public function prepareCpe($model, $send_email=0, $extra)
 	{
 		$data = array(
 		    "operacion"				=> "generar_comprobante",
@@ -203,6 +255,25 @@ class InvoicesController extends Controller {
 		    "tabla_personalizada_codigo"        => "",
 		    "formato_de_pdf"                    => "",
 		);
+		if (isset($extra['detraccion'])) {
+			$data['sunat_transaction'] = '30';
+			$data['detraccion'] = true;
+			$data['detraccion_tipo'] = 18;
+			$data['detraccion_total'] = $extra['d_monto'];
+			$data['detraccion_porcentaje'] = 12;
+			$data['medio_de_pago_detraccion'] = 1;
+		}
+		if (isset($extra['CondPago']) and $extra['CondPago']=='CREDITO') {
+			$data['medio_de_pago'] = 'CREDITO';
+			if ($extra['cuotas']==1) {
+				unset($extra['credito'][1]);
+			}
+			foreach ($extra['credito'] as $key => $cuota) {
+				$extra['credito'][$key]['fecha_de_pago'] = date('d-m-Y', strtotime($cuota['fecha_de_pago']));
+			}
+			$data['venta_al_credito'] = $extra['credito'];
+
+		}
 		if (trim($model->Siniestro) != '' and trim($model->Poliza) != '' and trim($model->Franquicia) != '') {
   			$data['observaciones'] = 'SINIESTRO:'.$model->Siniestro.'//POLIZA:'.$model->Poliza.'//FRANQUICIA:'.$model->Moneda.' '.$model->Franquicia.'+IGV';
 		} else {
@@ -265,7 +336,7 @@ class InvoicesController extends Controller {
 				"anticipo_documento_numero" => ""
 			);
 		}
-		// dd($data);
+		//dd($data);
 		return $data;
 		
 	}
@@ -303,4 +374,44 @@ class InvoicesController extends Controller {
 		return $respuesta;
 	}
 
+	function getTipoCambio($fecha)
+	{
+	   $token = 'apis-token-1026.8lk-wAXL85v36UOJbNy2Hb8YpXiGEau-';
+	   //Invocamos el servicio de NUBEFACT
+	   $ch = curl_init();
+	   curl_setopt($ch, CURLOPT_URL, 'https://api.apis.net.pe/v1/tipo-cambio-sunat?fecha=' . $fecha);
+	   curl_setopt(
+	      $ch, CURLOPT_HTTPHEADER, array(
+	       'Referer: https://apis.net.pe/tipo-de-cambio-sunat-api',
+	       'Authorization: Bearer ' . $token
+	      )
+	   );
+	   curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
+	   curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+	   curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+	   $respuesta  = curl_exec($ch);
+	   curl_close($ch);
+	   return json_decode($respuesta);
+	}
+	//'https://api.apis.net.pe/v1/tipo-cambio-sunat?month=6&year=2021'
+	function getTipoCambioMes($y, $m)
+	{
+	   $token = 'apis-token-1026.8lk-wAXL85v36UOJbNy2Hb8YpXiGEau-';
+	   //dd("https://api.apis.net.pe/v1/tipo-cambio-sunat=?month=$m&year=$y");
+	   //Invocamos el servicio de NUBEFACT
+	   $ch = curl_init();
+	   curl_setopt($ch, CURLOPT_URL, "https://api.apis.net.pe/v1/tipo-cambio-sunat?month=$m&year=$y");
+	   curl_setopt(
+	      $ch, CURLOPT_HTTPHEADER, array(
+	       'Referer: https://apis.net.pe/tipo-de-cambio-sunat-api',
+	       'Authorization: Bearer ' . $token
+	      )
+	   );
+	   curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
+	   curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+	   curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+	   $respuesta  = curl_exec($ch);
+	   curl_close($ch);
+	   return json_decode($respuesta);
+	}
 }
