@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -87,5 +87,133 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
     {!! Html::script('js/general.js') !!}
+    <script>
+$(document).ready(function () {
+    if ($('#CondPago').val()!='CONTADO') {
+        $('.credito').removeClass('hidden')
+        $('.cuota2').addClass('hidden')
+        fecha_1 = new Date($('#fecha').val()+'T00:00')
+        fecha_1.setDate(fecha_1.getDate() + 30)
+        $('#fecha_1').val(fecha_1.toISOString().slice(0, 10))
+        total = $('#total').val()
+        if ($('#detraccion').is(":checked")) {
+            total = $('#neto').val()
+        }
+        $('#cuota_1').val(total)
+        calcular_dias()
+    } else {
+        $('.credito').addClass('hidden')
+        calcular_dias()
+    }
+    if ($('#detraccion').is(":checked")) {
+        $('.detraccion').removeClass('hidden')
+    } else {
+        $('.detraccion').addClass('hidden')
+
+    }
+    $('#CondPago').change(function (e) {
+        if ($('#CondPago').val()!='CONTADO') {
+            $('.credito').removeClass('hidden')
+            cuotas = $('#cuotas').val()
+        } else {
+            $('.credito').addClass('hidden')
+
+        }
+        recalcularTotales()
+    })
+
+    $('#detraccion').change(function (e) {
+        if ($('#detraccion').is(":checked")) {
+            $('.detraccion').removeClass('hidden')
+        } else {
+            $('.detraccion').addClass('hidden')
+        }
+        recalcularTotales()
+    })
+    $('#cuotas').change(function (e) {
+        recalcularTotales()
+    })
+    $('#cuota_1').change(function (e) {
+        total = parseFloat($('#total').val())
+        cuota_1 = parseFloat($('#cuota_1').val())
+        if ($('#detraccion').is(":checked")) {
+            total = parseFloat($('#neto').val())
+        }
+        cuota_2 = total - cuota_1
+        $('#cuota_2').val(cuota_2)
+    })
+    $('#cuota_2').change(function (e) {
+        total = parseFloat($('#total').val())
+        cuota_2 = parseFloat($('#cuota_2').val())
+        if ($('#detraccion').is(":checked")) {
+            total = parseFloat($('#neto').val())
+        }
+        cuota_1 = total - cuota_2
+        $('#cuota_1').val(cuota_1)
+    })
+    $('#fecha_1').change(function (e) {
+        if ($('#cuotas').val() == 1) {
+            $('#FechaVence').val($('#fecha_1').val())
+            calcular_dias()
+        }
+    })
+    $('#fecha_2').change(function (e) {
+        if ($('#cuotas').val() == 2) {
+            $('#FechaVence').val($('#fecha_2').val())
+            calcular_dias()
+        }
+    })
+    function recalcularTotales() {
+        $('.detraccion').removeClass('hidden')
+        if ($('#CondPago').val()!='CONTADO') {
+            if ($('#cuotas').val() == 1) {
+                $('.cuota2').addClass('hidden')
+                fecha_1 = new Date($('#fecha').val()+'T00:00')
+                fecha_1.setDate(fecha_1.getDate() + 30)
+                $('#fecha_1').val(fecha_1.toISOString().slice(0, 10))
+                total = $('#total').val()
+                if ($('#detraccion').is(":checked")) {
+                    total = $('#neto').val()
+                }
+                $('#cuota_1').val(total)
+                $('#FechaVence').val($('#fecha_1').val())
+            }
+            if ($('#cuotas').val() == 2) {
+                $('.cuota2').removeClass('hidden')
+                fecha_1 = new Date($('#fecha').val()+'T00:00')
+                fecha_1.setDate(fecha_1.getDate() + 15)
+                $('#fecha_1').val(fecha_1.toISOString().slice(0, 10))
+                fecha_2 = new Date($('#fecha').val()+'T00:00')
+                fecha_2.setDate(fecha_2.getDate() + 30)
+                $('#fecha_2').val(fecha_2.toISOString().slice(0, 10))
+
+                total = parseFloat($('#total').val())
+                if ($('#detraccion').is(":checked")) {
+                    total = parseFloat($('#neto').val())
+                }
+                cuota_1 = Math.round(total*100/2)/100
+                cuota_2 = total - cuota_1
+                $('#cuota_1').val(cuota_1)
+                $('#cuota_2').val(cuota_2)
+                $('#FechaVence').val($('#fecha_2').val())
+            }
+        } else {
+            $('#FechaVence').val($('#fecha').val())
+            //$('#Dias').val('0')
+        }
+        calcular_dias()
+    }
+    function calcular_dias() {
+        day1 = new Date($('#fecha').val())
+        day2 = new Date($('#FechaVence').val())
+        difference= Math.abs(day2-day1)
+        days = difference/(1000 * 3600 * 24)
+        // console.log($('#fecha').val())
+        // console.log($('#FechaVence').val())
+        // console.log(days)
+        $('#Dias').val(days)
+    }
+});
+    </script>
 </body>
 </html>
