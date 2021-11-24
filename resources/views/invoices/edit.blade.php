@@ -82,7 +82,7 @@
 						</div>
 						<div class="col-sm-2 detraccion">
 							{!! Form::label('tc', 'Tipo Cambio', ['class'=>'control-label']) !!}
-							{!! Form::number("tc", $data['tc'], ['class'=>'form-control col-sm-2', 'step'=>0.01]) !!}
+							<p class="form-control-static">{{ $data['tc'] }} %</p>
 						</div>
 						<div class="col-sm-2 detraccion">
 							{!! Form::label('d_monto','Detracción', ['class'=>'control-label']) !!}
