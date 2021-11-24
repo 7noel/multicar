@@ -102,6 +102,7 @@ $(document).ready(function () {
         $('#cuota_1').val(total)
         calcular_dias()
     } else {
+        $('#FechaVence').val($('#fecha').val())
         $('.credito').addClass('hidden')
         calcular_dias()
     }
@@ -198,8 +199,8 @@ $(document).ready(function () {
                 $('#FechaVence').val($('#fecha_2').val())
             }
         } else {
-            $('#FechaVence').val($('#fecha').val())
             //$('#Dias').val('0')
+            $('#FechaVence').val($('#fecha').val())
         }
         calcular_dias()
     }
